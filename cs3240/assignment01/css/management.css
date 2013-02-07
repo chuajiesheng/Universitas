@@ -3,8 +3,14 @@
  * Author: Chua Jie Sheng
  */
 
+@font-face {
+    font-family: 'SegoeUILight';
+    src: url('http://static.squarespace.com/static/50abaaf7e4b09a617638422b/t/50d21b81e4b08b028a4868cf/1355946881950/segoe-ui-light.eot?#iefix') format('embedded-opentype'), 
+    url('http://static.squarespace.com/static/50abaaf7e4b09a617638422b/t/50d21b86e4b05f4ba8bed41f/1355946886233/segoe-ui-light.ttf')  format('truetype'),
+}
+
 * {
-    font-family: Segoe UI;
+    font-family: 'SegoeUILight', Segoe UI;
 }
 
 div {
@@ -14,7 +20,6 @@ div {
 h1 {
     display: inline;
     font-family: Segoe UI;
-
 }
 
 .header1 {
