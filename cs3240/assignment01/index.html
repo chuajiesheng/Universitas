@@ -59,7 +59,7 @@
               <div class="control-group">
                 <label class="control-label" for="inputEmail">Email</label>
                 <div class="controls">
-                  <input type="text" id="inputEmail" name="email" class="required" placeholder="Email"></input>
+                  <input type="text" id="inputEmail" name="email" class="email required" placeholder="Email"></input>
                 </div>
               </div>
               <div class="control-group">
@@ -83,6 +83,21 @@
               <button class="btn btn-primary" id="save" name="save">Save changes</button>
             </div>
           </form>
+        </div>
+
+        <!-- Modal for Report -->
+        <div id="report" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="reportLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="reportLabel">Report</h3>
+          </div>
+          <div class="modal-body">
+
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-primary">Save changes</button>
+          </div>
         </div>
 
         <div class="span2" align="left">
@@ -296,7 +311,7 @@
           <div class="span12"></div>
         </div>
         <div class="row-fluid show-grid">
-	  <div class="span3 footer">
+	  <div class="span3 footer" id="longest">
             <div class="row-fluid">
               <div class="span12"></div>
             </div>
@@ -306,8 +321,16 @@
             <div class="row-fluid">
               <div class="span12 footer_subtitle">Longest Waiting Time <i class="icon-chevron-up icon-white"></i></div>
             </div>
+            <div class="row-fluid" id="longest_time" style="display:none">
+              <div class="span12 footer_subtitle">35min</div>
+            </div>
+            <script>
+              $("#longest").click(function() {
+              $("#longest_time").show("fast");
+              });
+            </script>
           </div>
-  	  <div class="span3 footer">
+  	  <div class="span3 footer" id="long_queue">
             <div class="row-fluid">
               <div class="span12"></div>
             </div>
@@ -317,6 +340,14 @@
             <div class="row-fluid">
               <div class="span12 footer_subtitle">Longest Waiting Queue <i class="icon-chevron-up icon-white"></i></div>
             </div>
+            <div class="row-fluid" id="longest_queue" style="display:none">
+              <div class="span12 footer_subtitle">50pax</div>
+            </div>
+            <script>
+              $("#long_queue").click(function() {
+              $("#longest_queue").show("fast");
+              });
+            </script>
           </div>
 	  <div class="span6 footer">
             <div class="row-fluid">
@@ -335,4 +366,3 @@
         </div>
   </body>
 </html>
-bash-3.2$ 
