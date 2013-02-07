@@ -1,0 +1,68 @@
+/*!
+ * OCBC Management Website's CSS
+ * Author: Chua Jie Sheng
+ */
+
+* {
+    font-family: Segoe UI;
+}
+
+div {
+    //border: 1px solid black;
+}
+
+h1 {
+    display: inline;
+    font-family: Segoe UI;
+
+}
+
+.header1 {
+    display: inline;
+    color: #CC0033;
+    margin: 4px;
+    font-family: Segoe UI;
+    font-weight: normal;
+    vertical-align: -9px;
+}
+
+.header2 {
+    display: inline;
+    margin: 4px;
+    font-family: Segoe UI;
+    font-weight: normal;
+    vertical-align: -10px;
+}
+
+.header3 {
+    font-size: 25pt;
+    font-family: Segoe UI;
+    font-weight: normal;
+}
+
+.logo {
+    height: 60px;
+    width:  60px;
+    margin: 6px;
+}
+
+.footer {
+    background: #990000;
+}
+
+.footer_title {
+    font-family: Segoe UI;
+    font-weight: lighter;
+    font-size: 20pt;
+    color: white;
+    margin-left: 20px !important;
+}
+
+.footer_subtitle {
+    font-family: Segoe UI;
+    font-weight: lighter;
+    font-size: 10pt;
+    color: white;
+    margin-left: 20px !important;
+
+}
