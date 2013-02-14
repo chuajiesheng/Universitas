@@ -28,3 +28,18 @@ let () =
              h2 [pcdata "Welcome from Eliom's destillery!"];
              p [pcdata(string_of_int(fact(10)))];
            ])))
+
+let fact =
+  Helloworld_app.register_service
+    ~path:["fact"]
+    ~get_params:(Eliom_parameter.int "seed")
+    (fun seed () ->
+      Lwt.return
+       Html5.D.(html
+                  (head (title (pcdata "")) [])
+                  (body
+                     [p [
+                         pcdata "factorial of ";
+                         strong [pcdata(string_of_int(seed))];
+                         pcdata ": ";
+                         strong [pcdata(string_of_int(fact(seed)))]]])))
