@@ -2,14 +2,8 @@
  * OCBC Management Website's CSS
  * Author: Chua Jie Sheng
  */
-
-div {
-    //border: 1px solid black;
-}
-
 h1 {
     display: inline;
-    font-family: Segoe UI;
 }
 
 .header1 {
@@ -27,6 +21,8 @@ h1 {
 
 .header3 {
     font-size: 25pt;
+    padding-top: 0px;
+    margin-top: 0px;
 }
 
 .logo {
