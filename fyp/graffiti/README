@@ -8,6 +8,15 @@ It listed the steps and procedure to create a collaborative drawing application.
 Here are various problem wit the tutorial and is all summaries in this blog post:
 http://fyp.jschua.com/2013/03/new-thing-about-eliom.html
 
+Usage
+=====
+ - make clean
+ - make byte
+ - oclosure_req local/var/www/graffiti/eliom/graffiti.js
+ - make test.byte
+ - draw @ http://localhost:8080/graff
+ - image @ http://localhost:8080/image 
+
 Instructions
 ============
 
