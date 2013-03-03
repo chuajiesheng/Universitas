@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OCBC - Management Dash Board</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/management.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/slidernav.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+  <body>
+    <img src="img/OCBC Logo.png" class="logo" />&nbsp;<h2 class="header1">Management</h2>&nbsp;<h3 class="header2">Dash Board</h3>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/slidernav.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
+
+    <div class="container">
+      <div class="row-fluid show-grid">
+        <div class="span10">
+          <h3 class="header3">Reports</h3>
+        </div>
+
+        <div class="span2" align="left">
+          <ul class="nav nav-pills" style="padding-top: 5px;">
+            <li class="dropdown active">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#"><i class="icon-user"></i> Janet Chan <b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li><a tabindex="-1" href="#" data-toggle="modal"><i class="icon-edit"></i> Profile</a></li>
+                <li><a tabindex="-1" href="#"><i class="icon-list-alt"></i> Report</a></li>
+                <li><a tabindex="-1" href="#"><i class="icon-wrench"></i> Setting</a></li>
+                <li class="divider"></li>
+                <li><a tabindex="-1" href="#"><i class="icon-off"></i> Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="row-fluid">
+          <!-- content -->
+          <div class="span3">
+            <h3>Options</h3>
+            <div class="row-fluid">
+              <form>
+                <select id="type" name="type">
+                  <option id="no_option" value="none">Select Type</option>
+                  <option id="branch_option" value="branch">Branch</option>
+                  <option id="user_option" value="user">PFC</option>
+                </select>
+                <script>
+                  $("#type").click(function() {
+                    // remove the default option
+                    $("select[name='type'] option:eq(0)").attr("disabled", "disabled");
+                  });
+                </script>
+                <select id="identity" disabled="">
+                </select>
+                <script>
+                  $("#type").change(function() {
+                    // load branch or user
+                    alert("changed");
+
+                    $.ajax({
+                      type: "GET",
+                      url: "http://pegasus.jschua.com/management/api/branch",
+                      contentType: "application/json; charset=utf-8",
+                      dataType: "json",
+                      statusCode: {
+                        202: function () {
+                          $('#result').text("202 (Accepted)");
+                          },
+                        406: function () {
+                          $('#result').text("406 (Not Acceptable)");
+                        }
+                      }
+                    }).done(function (data) {
+                      $.each(data, function (key, val) {
+
+                      var str = 'Branch: ' + val.branch_id
+                        + '; ' + 'Name: ' + val.name
+                        + '; ' + 'Address: ' + val.address;
+                      alert(str);
+                      });
+
+                    }).fail(function (jqXHR, textStatus, errorThrown) {
+                      alert("The following error occured. " + textStatus + " " + errorThrown);
+                    }).always(function (data, textStatus, errorThrown) {
+
+                    });
+                  });
+                </script>
+              </form>
+            </div>
+          </div>
+          <div class="span9">
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12"></div>
+        </div>
+        <div class="row-fluid show-grid">
+          <!-- footer -->
+        </div>
+  </body>
+</html>

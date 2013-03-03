@@ -1,0 +1,49 @@
+/*!
+ * OCBC Management Website's CSS
+ * Author: Chua Jie Sheng
+ */
+h1 {
+    display: inline;
+}
+
+.header1 {
+    display: inline;
+    color: #CC0033;
+    margin: 4px;
+    vertical-align: -9px;
+}
+
+.header2 {
+    display: inline;
+    margin: 4px;
+    vertical-align: -10px;
+}
+
+.header3 {
+    font-size: 25pt;
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+.logo {
+    height: 60px;
+    width:  60px;
+    margin: 6px;
+}
+
+.footer {
+    background: #990000;
+}
+
+.footer_title {
+    font-size: 20pt;
+    color: white;
+    margin-left: 20px !important;
+}
+
+.footer_subtitle {
+    font-size: 10pt;
+    color: white;
+    margin-left: 20px !important;
+
+}

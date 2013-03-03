@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OCBC - Management Dash Board</title>
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/management.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/slidernav.css" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="assets/css/bootstrap-responsive.css" rel="stylesheet">
+  </head>
+  <body>
+    <img src="img/OCBC Logo.png" class="logo" />&nbsp;<h2 class="header1">Management</h2>&nbsp;<h3 class="header2">Dash Board</h3>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="js/slidernav.js"></script>
+    <script src="js/bootstrap-dropdown.js"></script>
+    <script src="js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="http://jzaefferer.github.com/jquery-validation/jquery.validate.js"></script>
+    <style type="text/css">
+      label.error { color: red; }
+      div { border: 0px solid black; }
+    </style>
+    <script>
+      $(document).ready(function(){
+      $("#profileForm").validate();
+      });
+    </script>
+
+    <div class="container">
+      <div class="row-fluid show-grid">
+        <div class="span10">
+          <h3 class="header3">Overview</h3>
+        </div>
+
+        <!-- Modal for Profile -->
+        <div id="profile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+            <h3 id="modalLabel">Profile</h3>
+          </div>
+          <form id="profileForm" class="form-horizontal">
+            <div class="modal-body">
+              <div class="control-group">
+                <label class="control-label" for="inputName">Name</label>
+                <div class="controls">
+                  <input type="text" id="inputName" name="name" class="required" placeholder="Name"></input>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="inputRole">Role</label>
+                <div class="controls">
+                  <select id="inputRole" name="role">
+                    <option>Administrator</option>
+                    <option>Manager</option>
+                    <option>Executive</option>
+                    <option>Assistant</option>
+                  </select>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="inputEmail">Email</label>
+                <div class="controls">
+                  <input type="text" id="inputEmail" name="email" class="email required" placeholder="Email"></input>
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="inputContact">Contact No</label>
+                <div class="controls">
+                  <input type="text" id="inputContact" name="contact" placeholder="Contact No">
+                </div>
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="inputBranch">Branch</label>
+                <div class="controls">
+                  <select id="inputBranch" name="branch">
+                    <option>Bukit Timah</option>
+                    <option>...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn" data-dismiss="modal" id="close" name="close" aria-hidden="true">Close</button>
+              <button class="btn btn-primary" id="save" name="save">Save changes</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="span2" align="left">
+          <ul class="nav nav-pills" style="padding-top: 5px;">
+            <li class="dropdown active">
+              <a class="dropdown-toggle" id="drop4" role="button" data-toggle="dropdown" href="#"><i class="icon-user"></i> Janet Chan <b class="caret"></b></a>
+              <ul id="menu1" class="dropdown-menu" role="menu" aria-labelledby="drop4">
+                <li><a tabindex="-1" href="#profile" data-toggle="modal"><i class="icon-edit"></i> Profile</a></li>
+                <li><a tabindex="-1" href="#"><i class="icon-list-alt"></i> Report</a></li>
+                <li><a tabindex="-1" href="#"><i class="icon-wrench"></i> Setting</a></li>
+                <li class="divider"></li>
+                <li><a tabindex="-1" href="#"><i class="icon-off"></i> Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="row-fluid">
+          <div class="span9" style="margin-right: 0px;">
+            <img src="img/map.jpg" alt="Map" width="97%"/>
+          </div>
+          <div class="span3" style="margin-left: 0px;">
+            <!--  branch listing -->
+            <div class="slide" id="slide1" data-slide="1" data-stellar-background-ratio="0.5">
+              <div class="wrapper">
+                <div id="left_branch_list" >
+                  <!-- vertical slide branch list -->
+                  <div id="slider">
+                    <div class="slider-content">
+                      <ul style="margin-left: 0px;">
+                        <!-- A s -->
+                        <li id="a"><a name="a" class="title">A</a>
+                          <ul>
+                            <li><a href="javascript: set_location('alexandra village')" onClick="highlight(this)">Alexandra Village</a></li>
+                            <li><a href="javascript: set_location('aljunied')" onClick="highlight(this)">Aljunied</a></li>
+                            <li><a href="javascript: set_location('ang mo kio')" onClick="highlight(this)">Ang Mo Kio</a></li>
+                            <li><a href="javascript: set_location('ang mo kio central')" onClick="highlight(this)">Ang Mo Kio Central</a></li>
+                          </ul>
+                        </li>
+                        <!-- B s -->
+                        <li id="b"><a name="b" class="title">B</a>
+                          <ul>
+                            <li><a href="javascript: set_location('balestier road')" onClick="highlight(this)">Balestier Road</a></li>
+                            <li><a href="javascript: set_location('bedok')" onClick="highlight(this)">Bedok</a></li>
+                            <li><a href="javascript: set_location('bedok north')" onClick="highlight(this)">Bedok North</a></li>
+                            <li><a href="javascript: set_location('bishan')" onClick="highlight(this)">Bishan</a></li>
+                            <li><a href="javascript: set_location('bukit batok')" onClick="highlight(this)">Bukit Batok</a></li>
+                            <li><a href="javascript: set_location('bukit panjang')" onClick="highlight(this)">Bukit Panjang</a></li>
+                            <li><a href="javascript: set_location('bukit timah')" onClick="highlight(this)">Bukit Timah</a></li>
+                          </ul>
+                        </li>
+                        <!-- C s -->
+                        <li id="c"><a name="c" class="title">C</a>
+                          <ul>
+                            <li><a href="javascript: set_location('causeway point')" onClick="highlight(this)">Causeway Point</a></li>
+                            <li><a href="javascript: set_location('chua chu kang')" onClick="highlight(this)">Choa Chu Kang</a></li>
+                            <li><a href="javascript: set_location('compass point')" onClick="highlight(this)">Compass Point</a></li>
+                            <li><a href="javascript: set_location('city square')" onClick="highlight(this)">City Square Mall</a></li>
+                            <li><a href="javascript: set_location('clementi')" onClick="highlight(this)">Clementi</a></li>
+                          </ul>
+                        </li>
+                        <!-- E s -->
+                        <li id="e"><a name="e" class="title">E</a>
+                          <ul>
+                            <li><a href="javascript: set_location('east coast')" onClick="highlight(this)">East Coast</a></li>
+                          </ul>
+                        </li>
+                        <!-- G s -->
+                        <li id="g"><a name="g" class="title">G</a>
+                          <ul>
+                            <li><a href="javascript: set_location('geylang')" onClick="highlight(this)">Geylang</a></li>
+                          </ul>
+                        </li>
+                        <!-- H s -->
+                        <li id="h"><a name="h" class="title">H</a>
+                          <ul>
+                            <li><a href="javascript: set_location('harbourfront')" onClick="highlight(this)">HarbourFront</a></li>
+                            <li><a href="javascript: set_location('holland village')" onClick="highlight(this)">Holland Village</a></li>
+                            <li><a href="javascript: set_location('hougang')" onClick="highlight(this)">Hougang</a></li>
+                            <li><a href="javascript: set_location('hougnag mall')" onClick="highlight(this)">Hougang Mall</a></li>
+                          </ul>
+                        </li>
+                        <!-- I s -->
+                        <li id="i"><a name="i" class="title">I</a>
+                          <ul>
+                            <li><a href="javascript: set_location('ion orchard')" onClick="highlight(this)">ION Orchard</a></li>
+                          </ul>
+                        </li>
+                        <!-- J s -->
+                        <li id="j"><a name="j" class="title">J</a>
+                          <ul>
+                            <li><a href="javascript: set_location('jalan besar')" onClick="highlight(this)">Jalan Besar</a></li>
+                            <li><a href="javascript: set_location('jalan sultan')" onClick="highlight(this)">Jalan Sultan</a></li>
+                            <li><a href="javascript: set_location('jurong')" onClick="highlight(this)">Jurong</a></li>
+                            <li><a href="javascript: set_location('jurong east')" onClick="highlight(this)">Jurong East</a></li>
+                            <li><a href="javascript: set_location('jurong point')" onClick="highlight(this)">Jurong Point</a></li>
+                            <li><a href="javascript: set_location('jurong west')" onClick="highlight(this)">Jurong West</a></li>
+                          </ul>
+                        </li>
+                        <!-- K s -->
+                        <li id="k"><a name="k" class="title">K</a>
+                          <ul>
+                            <li><a href="javascript: set_location('katong')" onClick="highlight(this)">Katong</a></li>
+                          </ul>
+                        </li>
+                        <!-- M s -->
+                        <li id="m"><a name="m" class="title">M</a>
+                          <ul>
+                            <li><a href="javascript: set_location('marina bay financial centre')" onClick="highlight(this)">Marina Bay Financial Centre</a></li>
+                            <li><a href="javascript: set_location('marina bay sands')" onClick="highlight(this)">Marina Bay Sands</a></li>
+                          </ul>
+                        </li>
+                        <!-- N s -->
+                        <li id="n"><a name="n" class="title">N</a>
+                          <ul>
+                            <li><a href="javascript: set_location('nex')" onClick="highlight(this)">NEX</a></li>
+                            <li><a href="javascript: set_location('north bridge')" onClick="highlight(this)">North Bridge</a></li>
+                            <li><a href="javascript: set_location('north point')" onClick="highlight(this)">NorthPoint</a></li>
+                          </ul>
+                        </li>
+                        <!-- O s -->
+                        <li id="o"><a name="o" class="title">O</a>
+                          <ul>
+                            <li><a href="javascript: set_location('ocbc centre')" onClick="highlight(this)">OCBC Centre</a></li>
+                            <li><a href="javascript: set_location('orchard road')" onClick="highlight(this)">Orchard Rd</a></li>
+                          </ul>
+                        </li>
+                        <!-- P s -->
+                        <li id="p"><a name="p" class="title">P</a>
+                          <ul>
+                            <li><a href="javascript: set_location('peoples park')" onClick="highlight(this)">People's Park</a></li>
+                            <li><a href="javascript: set_location('punggol plaza')" onClick="highlight(this)">Punggol Plaza</a></li>
+                          </ul>
+                        </li>
+                        <!-- R s -->
+                        <li id="r"><a name="r" class="title">R</a>
+                          <ul>
+                            <li><a href="javascript: set_location('robinson road')" onClick="highlight(this)">Robinson Road</a></li>
+                          </ul>
+                        </li>
+                        <!-- S s -->
+                        <li id="s"><a name="s" class="title">S</a>
+                          <ul>
+                            <li><a href="javascript: set_location('serangoon gardens')" onClick="highlight(this)">Serangoon Gardens</a></li>
+                            <li><a href="javascript: set_location('sixth avenue')" onClick="highlight(this)">Sixth Avenue</a></li>
+                            <li><a href="javascript: set_location('sun plaza')" onClick="highlight(this)">Sun Plaza</a></li>
+                            <li><a href="javascript: set_location('suntec city')" onClick="highlight(this)">Suntec City</a></li>
+                          </ul>
+                        </li>
+                        <!-- T s -->
+                        <li id="t"><a name="t" class="title">T</a>
+                          <ul>
+                            <li><a href="javascript: set_location('tampines')" onClick="highlight(this)">Tampines</a></li>
+                            <li><a href="javascript: set_location('thomson')" onClick="highlight(this)">Thomson</a></li>
+                            <li><a href="javascript: set_location('toa payoh central')" onClick="highlight(this)">Toa Payoh Central</a></li>
+                          </ul>
+                        </li>
+                        <!-- U s -->
+                        <li id="u"><a name="u" class="title">U</a>
+                          <ul>
+                            <li><a href="javascript: set_location('ubi')" onClick="highlight(this)">Ubi</a></li>
+                          </ul>
+                        </li>
+                        <!-- W s -->
+                        <li id="w"><a name="w" class="title">W</a>
+                          <ul>
+                            <li><a href="javascript: set_location('white sands')" onClick="highlight(this)">White Sands</a></li>
+                            <li><a href="javascript: set_location('woodlands')" onClick="highlight(this)">Woodlands</a></li>
+                          </ul>
+                        </li>
+                        <!-- Y s -->
+                        <li id="y"><a name="y" class="title">Y</a>
+                          <ul>
+                            <li><a href="javascript: set_location('yishun')" onClick="highlight(this)">Yishun</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div id="stub" style="display:none"></div>
+                  <script type="text/javascript">
+                    $(document).ready(function(){
+                    $('#slider').sliderNav();
+                    });
+
+                    var selected_highlight = document.getElementById("stub");
+
+                    function highlight (obj) {
+                    selected_highlight.style.backgroundColor = 'transparent';
+                    obj.style.backgroundColor = '#f9d5d5';
+                    selected_highlight = obj;
+                    }
+                    function set_location(location) {
+                    //Set the location for confirmation (display)
+                    document.getElementById("conf_location").innerHTML = location;
+                    //Set the location value for confirmation form hidden field
+                    document.getElementById("conf_form_location").value = location;
+                    }
+                  </script>
+                </div>
+              </div>
+              <a class="button" data-slide="2" title=""></a>
+            </div><!--End Slide 1-->
+
+
+
+
+            <!-- end of branch list -->
+          </div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12"></div>
+        </div>
+        <div class="row-fluid show-grid">
+	  <div class="span3 footer" id="longest">
+            <div class="row-fluid">
+              <div class="span12"></div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_title">Ang Mo Kio</div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_subtitle">Longest Waiting Time <i class="icon-chevron-up icon-white"></i></div>
+            </div>
+            <div class="row-fluid" id="longest_time" style="display:none">
+              <div class="span12 footer_subtitle">35min</div>
+            </div>
+            <script>
+              $("#longest").click(function() {
+              $("#longest_time").show("fast");
+              });
+            </script>
+          </div>
+  	  <div class="span3 footer" id="long_queue">
+            <div class="row-fluid">
+              <div class="span12"></div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_title">Bukit Timah</div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_subtitle">Longest Waiting Queue <i class="icon-chevron-up icon-white"></i></div>
+            </div>
+            <div class="row-fluid" id="longest_queue" style="display:none">
+              <div class="span12 footer_subtitle">50pax</div>
+            </div>
+            <script>
+              $("#long_queue").click(function() {
+              $("#longest_queue").show("fast");
+              });
+            </script>
+          </div>
+	  <div class="span6 footer">
+            <div class="row-fluid">
+              <div class="span12"></div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_subtitle">Woodlands 24min <i class="icon-chevron-up icon-white"></i> | Sengkang 20min <i class="icon-chevron-down icon-white"></i> | Tampines 16min <i class="icon-chevron-down icon-white"></i></div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12 footer_subtitle">Tampines 18pax <i class="icon-chevron-down icon-white"></i> | Woodlands 17pax <i class="icon-chevron-up icon-white"></i> | Sengkang 14pax <i class="icon-chevron-down icon-white"></i></div>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span12"></div>
+          </div>
+        </div>
+  </body>
+</html>
