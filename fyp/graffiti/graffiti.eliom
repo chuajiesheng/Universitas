@@ -3,19 +3,9 @@
   open Eliom_content
   open Eliom_content.Html5.D (* provide functions to create HTML nodes *)
   open Lwt
-}}
-
-{client{
-  let _ = Eliom_lib.alert "Hello!"
-}}
-
-module Graffiti_app =
-  Eliom_registration.App (
-    struct
-      let application_name = "graffiti"
-    end)
-
-{shared{
+  
+  let count = ref 0
+  
   let width = 700
   let height = 400
 
@@ -23,9 +13,9 @@ module Graffiti_app =
     deriving (Json)
 }}
 
-let bus = Eliom_bus.create Json.t<messages>
-
 {client{
+  let _ = Eliom_lib.alert "Hello!"
+    
   let draw ctx (color, size, (x1, y1), (x2, y2)) =
     ctx##strokeStyle <- (Js.string color);
     ctx##lineWidth <- float size;
@@ -34,6 +24,15 @@ let bus = Eliom_bus.create Json.t<messages>
     ctx##lineTo(float x2, float y2);
     ctx##stroke()
 }}
+
+(* app registration *)
+module Graffiti_app =
+  Eliom_registration.App (
+    struct
+      let application_name = "graffiti"
+    end)
+
+let bus = Eliom_bus.create Json.t<messages>
 
 let canvas_elt =
   canvas ~a:[a_width width; a_height height]
@@ -78,19 +77,6 @@ let imageservice =
     ~path:["image"]
     ~get_params:Eliom_parameter.unit
     (fun () () -> Lwt.return (image_string(), "image/png"))
-
-let page =
-  (html
-    (Eliom_tools.F.head ~title:"Graffiti"
-      ~css:[
-        ["css";"common.css"];
-        ["css";"hsvpalette.css"];
-        ["css";"slider.css"];
-        ["css";"graffiti.css"];
-      ]
-      ~js:[["graffiti_oclosure.js"]]())
-    (body [h1 [pcdata "Graffiti"];
-          canvas_elt]))
 
 {client{
   let init_client () =
@@ -159,7 +145,20 @@ let page =
 }}
 
 
-let count = ref 0
+
+
+let page =
+  (html
+    (Eliom_tools.F.head ~title:"Graffiti"
+      ~css:[
+        ["css";"common.css"];
+        ["css";"hsvpalette.css"];
+        ["css";"slider.css"];
+        ["css";"graffiti.css"];
+      ]
+      ~js:[["graffiti_oclosure.js"]]())
+    (body [h1 [pcdata "Graffiti"];
+          canvas_elt]))
 
 let main_service =
   Graffiti_app.register_service
