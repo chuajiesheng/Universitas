@@ -78,29 +78,38 @@ let rgb_from_string color = (* color is in format "#rrggbb" *)
   in
   try get_color 0, get_color 1, get_color 2 with | _ -> 0.,0.,0.
 
-let draw_server, image_string =
+let draw_line ctx pts = (
+  let ((color:string), size, pt1, pt2) = pts in
+  let x1, y1 = pt1 in
+  let x2, y2 = pt2 in
+  (* set thickness of brush *)
+  Cairo.set_line_width !ctx (float size);
+  Cairo.set_line_join !ctx Cairo.JOIN_ROUND;
+  Cairo.set_line_cap !ctx Cairo.ROUND;
+  let red, green, blue = rgb_from_string color in
+  Cairo.set_source_rgb !ctx red green blue;
+  Cairo.move_to !ctx (float x1) (float y1);
+  Cairo.line_to !ctx (float x2) (float y2);
+  Cairo.Path.close !ctx;
+  (* apply the ink *)
+  Cairo.stroke !ctx;
+)
+
+let create_server, draw_server, image_string =
   let surface =
     Cairo.Image.create Cairo.Image.ARGB32 ~width ~height
   in
-  let ctx = Cairo.create surface
+  let ctx = ref (Cairo.create surface)
   in
-  ((fun drawing ->
+  ((fun() ->
+    console (fun() -> "[create_server] recreate surface");
+    let surface = Cairo.Image.create Cairo.Image.ARGB32 ~width ~height in
+    ctx := Cairo.create surface
+  ),
+  (fun drawing ->
     match drawing with
       Line pts ->
-        let ((color:string), size, pt1, pt2) = pts in
-        let x1, y1 = pt1 in
-        let x2, y2 = pt2 in
-        (* set thickness of brush *)
-        Cairo.set_line_width ctx (float size);
-        Cairo.set_line_join ctx Cairo.JOIN_ROUND;
-        Cairo.set_line_cap ctx Cairo.ROUND;
-        let red, green, blue = rgb_from_string color in
-        Cairo.set_source_rgb ctx red green blue;
-        Cairo.move_to ctx (float x1) (float y1);
-        Cairo.line_to ctx (float x2) (float y2);
-        Cairo.Path.close ctx;
-        (* apply the ink *)
-        Cairo.stroke ctx;
+        draw_line ctx pts;
         Stack.push drawing shape_list;
         console (fun () -> "[draw_server] appending to shape_list (length of " ^ (string_of_int (Stack.length shape_list)) ^ ")");
     | _ -> failwith "unknown shapes"
@@ -215,11 +224,17 @@ let main_service =
 let pop_service =
   Graffiti_app.register_service
     ~path:["pop"]
-    ~get_params:Eliom_parameter.unit
-    (fun () () ->
+    ~get_params:Eliom_parameter.(int "i")
+    (fun i () ->
       ignore { unit {
+        Eliom_lib.alert "[pop_service] hello! ;]";
+        (* doing thing here cant access server i think *)
         remove %shape_list 10;
         Stack.clear %shape_list;
         Eliom_lib.alert "[pop_service] shape_list of length %s" (string_of_int(Stack.length %shape_list));
       }};
+      console (fun() -> "[pop_service] shape_list of length " ^ (string_of_int(Stack.length shape_list)));
+      create_server();
+      remove shape_list i;
+      console (fun() -> "[pop_service] shape_list of length " ^ (string_of_int(Stack.length shape_list)));
     Lwt.return page)
