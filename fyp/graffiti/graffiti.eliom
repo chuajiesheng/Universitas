@@ -25,17 +25,19 @@
 
   let pt = (0, 0)
   let shape = Line ("#000000", 0, pt, pt)
-  let shape_list:drawing Stack.t = Stack.create()
+  let drawing_list: drawing list ref = ref []
   let draw_shape = ""
 
-  let rec remove stack x =
+  let rec remove list x =
     match x with
-      0 -> Stack.pop shape_list; ()
+      0 ->
+        (match list with
+          [] -> []
+        | hd::tl -> tl)
     | _ ->
-      let s = Stack.pop shape_list in
-      remove stack (x-1);
-      Stack.push s stack;
-      ()
+        (match list with
+          [] -> []
+        | hd::tl -> hd :: (remove tl (x-1)))
 
 }}
 
@@ -110,8 +112,8 @@ let create_server, draw_server, image_string =
     match drawing with
       Line pts ->
         draw_line ctx pts;
-        Stack.push drawing shape_list;
-        console (fun () -> "[draw_server] appending to shape_list (length of " ^ (string_of_int (Stack.length shape_list)) ^ ")");
+        drawing_list := (drawing :: !drawing_list);
+        console (fun () -> "[draw_server] appending to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
     | _ -> failwith "unknown shapes"
    ),
    (fun() ->
@@ -131,7 +133,7 @@ let imageservice =
 
 {client{
       let init_client () =
-        Eliom_lib.alert "[init_client] shape_list of length %s" (string_of_int(Stack.length %shape_list));
+        Eliom_lib.alert "[init_client] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
 
         let canvas = Eliom_content.Html5.To_dom.of_canvas %canvas_elt in
         let ctx = canvas##getContext (Dom_html._2d_) in
@@ -229,12 +231,12 @@ let pop_service =
       ignore { unit {
         Eliom_lib.alert "[pop_service] hello! ;]";
         (* doing thing here cant access server i think *)
-        remove %shape_list 10;
-        Stack.clear %shape_list;
-        Eliom_lib.alert "[pop_service] shape_list of length %s" (string_of_int(Stack.length %shape_list));
+        remove !drawing_list 10;
+        (* Stack.clear %drawing_list; *)
+        Eliom_lib.alert "[pop_service] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
       }};
-      console (fun() -> "[pop_service] shape_list of length " ^ (string_of_int(Stack.length shape_list)));
+      console (fun() -> "[pop_service] drawing_list of length " ^ (string_of_int(List.length !drawing_list)));
       create_server();
-      remove shape_list i;
-      console (fun() -> "[pop_service] shape_list of length " ^ (string_of_int(Stack.length shape_list)));
+      drawing_list := (remove !drawing_list i);
+      console (fun() -> "[pop_service] drawing_list of length " ^ (string_of_int(List.length !drawing_list)));
     Lwt.return page)
