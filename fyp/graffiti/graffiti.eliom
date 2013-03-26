@@ -97,6 +97,15 @@ let draw_line ctx pts = (
   Cairo.stroke !ctx;
 )
 
+let rec draw_drawing_list ctx list =
+  match list with
+    [] -> ()
+  | hd::tl -> (
+    draw_drawing_list ctx tl;
+    (match hd with
+    Line pts -> draw_line ctx pts
+    | _ -> failwith  "unknown shape"))
+
 let create_server, draw_server, image_string =
   let surface =
     Cairo.Image.create Cairo.Image.ARGB32 ~width ~height
@@ -117,6 +126,9 @@ let create_server, draw_server, image_string =
     | _ -> failwith "unknown shapes"
    ),
    (fun() ->
+     let surface = Cairo.Image.create Cairo.Image.ARGB32 ~width  ~height in
+     ctx := Cairo.create surface;
+     draw_drawing_list ctx !drawing_list;
      let b = Buffer.create 10000 in
      (* output a png in a string *)
      Cairo.PNG.write_to_stream surface (Buffer.add_string b);
