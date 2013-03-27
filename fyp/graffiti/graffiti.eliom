@@ -148,6 +148,19 @@ let imageservice =
         Eliom_lib.alert "[init_client] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
 
         let canvas = Eliom_content.Html5.To_dom.of_canvas %canvas_elt in
+          Lwt_js_events.(
+            async
+              (fun () ->
+                keypresses canvas
+                  (fun ev _ ->
+                    (* Eliom_lib.alert "[init_client] %s" (string_of_int(ev##keyCode)); *)
+                    Eliom_lib.debug_var "[init_client] keyCode" ev##keyCode;
+                    Lwt.return ()
+                  )
+              )
+          );
+
+
         let ctx = canvas##getContext (Dom_html._2d_) in
         ctx##lineCap <- Js.string "round";
 
@@ -233,6 +246,17 @@ let main_service =
       ignore { unit {
         init_client()
       }};
+      (* ignore { unit { *)
+      (*   Eliom_lib.alert "[main_service] hello! :D"; *)
+      (*   Lwt_js_events.( *)
+      (*     async *)
+      (*       (fun() -> *)
+      (*         keypresses canvas *)
+      (*         (fun ev _ -> *)
+      (*           Eliom_lib.alert ("[main_service] " ^(String_of_int (ev##keyCode))); *)
+      (*           Lwt.return () *)
+      (*         ))) *)
+      (* }}; *)
       Lwt.return page)
 
 let pop_service =
@@ -243,7 +267,7 @@ let pop_service =
       ignore { unit {
         Eliom_lib.alert "[pop_service] hello! ;]";
         (* doing thing here cant access server i think *)
-        remove !drawing_list 10;
+        %drawing_list := remove !drawing_list 10;
         (* Stack.clear %drawing_list; *)
         Eliom_lib.alert "[pop_service] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
       }};
