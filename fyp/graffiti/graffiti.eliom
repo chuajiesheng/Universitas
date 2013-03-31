@@ -148,18 +148,6 @@ let imageservice =
         Eliom_lib.alert "[init_client] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
 
         let canvas = Eliom_content.Html5.To_dom.of_canvas %canvas_elt in
-          Lwt_js_events.(
-            async
-              (fun () ->
-                keypresses canvas
-                  (fun ev _ ->
-                    (* Eliom_lib.alert "[init_client] %s" (string_of_int(ev##keyCode)); *)
-                    Eliom_lib.debug_var "[init_client] keyCode" ev##keyCode;
-                    Lwt.return ()
-                  )
-              )
-          );
-
 
         let ctx = canvas##getContext (Dom_html._2d_) in
         ctx##lineCap <- Js.string "round";
@@ -195,6 +183,7 @@ let imageservice =
         in
 
         let compute_line ev =
+          let () = Eliom_lib.debug "compute_line" in
           let oldx = !x and oldy = !y in
           set_coord ev;
           let color = Js.to_string (pSmall##getColor()) in
@@ -210,14 +199,35 @@ let imageservice =
           draw_drawing ctx v;
           Lwt.return () in
 
+        let press ev =
+          let () = Eliom_lib.debug "press ev" in
+          let key = ev##keyCode in
+          Dom_html.window##alert(Js.string("key pressed!"));
+          Eliom_lib.alert "[press] keycode %s" (string_of_int (key));
+          Lwt.return () in
+
         Lwt.async
           (fun () ->
             let open Lwt_js_events in
             mousedowns canvas
               (fun ev _ ->
+                Eliom_lib.debug "mouse @ %i,%i" ev##clientX ev##clientY;
                 set_coord ev; line ev >>= fun () ->
                 Lwt.pick [mousemoves Dom_html.document (fun x _ -> line x);
                           mouseup Dom_html.document >>= line]));
+
+        Lwt.async
+          (fun() ->
+            Eliom_lib.debug "open keypresses canvas";
+            let open Lwt_js_events in
+            keypresses Dom_html.document
+              (fun ev _ ->
+                Eliom_lib.debug "key %i" ev##keyCode;
+                press ev >>= fun() ->
+                Lwt.return ()
+              )
+          );
+
 
         Lwt.async
           (fun () ->
