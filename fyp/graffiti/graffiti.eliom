@@ -35,9 +35,12 @@
           [] -> []
         | hd::tl -> tl)
     | _ ->
-        (match list with
-          [] -> []
-        | hd::tl -> hd :: (remove tl (x-1)))
+      (match list with
+        [] -> []
+      | hd::tl -> hd :: (remove tl (x-1)))
+
+  let keyCode = ref 76;
+(* 99:c, 108:l, 114:r *)
 
 }}
 
@@ -65,6 +68,12 @@ module Graffiti_app =
     struct
       let application_name = "graffiti"
     end)
+
+let rpc_key = server_function Json.t<int>
+  (fun key -> keyCode := key; console (fun() -> "[rpc_key] keyCode: " ^ (string_of_int key)); Lwt.return())
+
+let rpc_log = server_function Json.t<string>
+  (fun str -> console (fun () -> "[client] " ^ str); Lwt.return ())
 
 let bus = Eliom_bus.create Json.t<drawing>
 
@@ -103,7 +112,7 @@ let rec draw_drawing_list ctx list =
   | hd::tl -> (
     draw_drawing_list ctx tl;
     (match hd with
-    Line pts -> draw_line ctx pts
+      Line pts -> draw_line ctx pts
     | _ -> failwith  "unknown shape"))
 
 let create_server, draw_server, image_string =
@@ -116,14 +125,14 @@ let create_server, draw_server, image_string =
     console (fun() -> "[create_server] recreate surface");
     let surface = Cairo.Image.create Cairo.Image.ARGB32 ~width ~height in
     ctx := Cairo.create surface
-  ),
-  (fun drawing ->
-    match drawing with
-      Line pts ->
-        draw_line ctx pts;
-        drawing_list := (drawing :: !drawing_list);
-        console (fun () -> "[draw_server] appending to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
-    | _ -> failwith "unknown shapes"
+   ),
+   (fun drawing ->
+     match drawing with
+       Line pts ->
+         draw_line ctx pts;
+         drawing_list := (drawing :: !drawing_list);
+         console (fun () -> "[draw_server] appending to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
+     | _ -> failwith "unknown shapes"
    ),
    (fun() ->
      let surface = Cairo.Image.create Cairo.Image.ARGB32 ~width  ~height in
@@ -143,7 +152,7 @@ let imageservice =
     ~get_params:Eliom_parameter.unit
     (fun () () -> Lwt.return (image_string(), "image/png"))
 
-{client{
+    {client{
       let init_client () =
         Eliom_lib.alert "[init_client] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
 
@@ -199,11 +208,16 @@ let imageservice =
           draw_drawing ctx v;
           Lwt.return () in
 
-        let press ev =
+        let press key =
           let () = Eliom_lib.debug "press ev" in
-          let key = ev##keyCode in
           Dom_html.window##alert(Js.string("key pressed!"));
           Eliom_lib.alert "[press] keycode %s" (string_of_int (key));
+          Lwt.async
+            (fun () ->
+              %rpc_log (string_of_int key));
+          Lwt.async
+            (fun () ->
+              %rpc_key key);
           Lwt.return () in
 
         Lwt.async
@@ -216,18 +230,28 @@ let imageservice =
                 Lwt.pick [mousemoves Dom_html.document (fun x _ -> line x);
                           mouseup Dom_html.document >>= line]));
 
-        Lwt.async
-          (fun() ->
-            Eliom_lib.debug "open keypresses canvas";
-            let open Lwt_js_events in
-            keypresses Dom_html.document
-              (fun ev _ ->
-                Eliom_lib.debug "key %i" ev##keyCode;
-                press ev >>= fun() ->
-                Lwt.return ()
-              )
-          );
+        Lwt_js_events.(
+          async
+            (fun () ->
+              keypresses Dom_html.document
+                (fun ev _ ->
+                  press (Js.Optdef.get (ev##charCode) (fun() -> 0));
+                  Eliom_lib.debug "key %i" (Js.Optdef.get (ev##charCode) (fun() -> 0));
+                  Lwt.return()
+                )));
 
+
+        (* Lwt.async *)
+        (*   (fun() -> *)
+        (*     Eliom_lib.debug "open keypresses canvas"; *)
+        (*     let open Lwt_js_events in *)
+        (*     keypresses Dom_html.document *)
+        (*       (fun ev _ -> *)
+        (*         Eliom_lib.debug "key %i" ev##keyCode; *)
+        (*         press ev >>= fun() -> *)
+        (*         Lwt.return() *)
+        (*       ) *)
+        (*   ); *)
 
         Lwt.async
           (fun () ->
@@ -279,10 +303,13 @@ let pop_service =
         (* doing thing here cant access server i think *)
         %drawing_list := remove !drawing_list 10;
         (* Stack.clear %drawing_list; *)
-        Eliom_lib.alert "[pop_service] drawing_list of length %s" (string_of_int(List.length !(%drawing_list)));
+        Eliom_lib.alert "[pop_service] drawing_list of length %s"
+          (string_of_int(List.length !(%drawing_list)));
       }};
-      console (fun() -> "[pop_service] drawing_list of length " ^ (string_of_int(List.length !drawing_list)));
+      console (fun() -> "[pop_service] drawing_list of length " ^
+        (string_of_int(List.length !drawing_list)));
       create_server();
       drawing_list := (remove !drawing_list i);
-      console (fun() -> "[pop_service] drawing_list of length " ^ (string_of_int(List.length !drawing_list)));
-    Lwt.return page)
+      console (fun() -> "[pop_service] drawing_list of length " ^
+        (string_of_int(List.length !drawing_list)));
+      Lwt.return page)
