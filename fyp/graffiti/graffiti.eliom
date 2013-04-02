@@ -47,7 +47,7 @@
 {client{
   let _ = Eliom_lib.alert "Hello!"
 
-       let draw ctx (color, size, (x1, y1), (x2, y2)) =
+       let draw_line ctx (color, size, (x1, y1), (x2, y2)) =
          ctx##strokeStyle <- (Js.string color);
          ctx##lineWidth <- float size;
          ctx##beginPath();
@@ -55,11 +55,23 @@
          ctx##lineTo(float x2, float y2);
          ctx##stroke()
 
+       let draw_rect ctx (color, size, (x1, y1), (x2, y2)) =
+         ctx##fillStyle <- (Js.string color);
+         ctx##fillRect(float x1, float y1, (float (x2 - x1)), (float (y2 - y1)))
+
+       let dist x y = sqrt(x *. x +. y *. y)
+       let draw_circle ctx (color, size, (x1, y1), (x2, y2)) =
+         ctx##fillStyle <- (Js.string color);
+         ctx##lineWidth <- float size;
+         ctx##moveTo(float x2, float y2);
+         ctx##arc(float ((x1+x2)/2), float ((y1+y2)/2), (dist (float (x2-x1)) (float (y2-y1)))/.2., float 0, 3.142 *. 2., Js.bool true);
+         ctx##fill()
+
        let draw_drawing ctx drawing =
          match drawing with
-           Line pts -> draw ctx pts
-         | Rectangle pts -> draw ctx pts
-         | Circle pts -> draw ctx pts
+           Line pts -> draw_line ctx pts
+         | Rectangle pts -> draw_rect ctx pts
+         | Circle pts -> draw_circle ctx pts
 }}
 
 (* app registration *)
@@ -70,7 +82,10 @@ module Graffiti_app =
     end)
 
 let rpc_key = server_function Json.t<int>
-  (fun key -> keyCode := key; console (fun() -> "[rpc_key] keyCode: " ^ (string_of_int key)); Lwt.return())
+  (fun key -> keyCode := key; console (fun() -> "[rpc_key] keyCode: " ^ (string_of_int !keyCode)); Lwt.return())
+
+let rpc_get_key = server_function Json.t<unit>
+  (fun () -> console(fun() -> "[rpc_get_key] get keyCode: " ^ (string_of_int !keyCode)); Lwt.return keyCode)
 
 let rpc_log = server_function Json.t<string>
   (fun str -> console (fun () -> "[client] " ^ str); Lwt.return ())
@@ -106,6 +121,31 @@ let draw_line ctx pts = (
   Cairo.stroke !ctx;
 )
 
+let draw_rect ctx pts = (
+  let ((color:string), size, pt1, pt2) = pts in
+  let x1, y1 = pt1 in
+  let x2, y2 = pt2 in
+  let red, green, blue = rgb_from_string color in
+  Cairo.set_source_rgb !ctx red green blue;
+  Cairo.rectangle !ctx (float x1) (float y1) (float (x2 - x1)) (float (y2 - y1));
+  Cairo.fill !ctx
+)
+
+let draw_circle ctx pts = (
+  let ((color:string), size, pt1, pt2) = pts in
+  let x1, y1 = pt1 in
+  let x2, y2 = pt2 in
+  Cairo.set_line_width !ctx (float size);
+  Cairo.set_line_join !ctx Cairo.JOIN_ROUND;
+  Cairo.set_line_cap !ctx Cairo.ROUND;
+  let red, green, blue = rgb_from_string color in
+  Cairo.set_source_rgb !ctx red green blue;
+  Cairo.arc !ctx (float ((x1+x2)/2)) (float ((y1+y2)/2)) ((hypot (float (x2-x1)) (float (y2-y1)))/.2.) 0. 6.284;
+  Cairo.stroke_preserve !ctx;
+    (* apply the ink *)
+  Cairo.fill !ctx;
+)
+
 let rec draw_drawing_list ctx list =
   match list with
     [] -> ()
@@ -113,6 +153,8 @@ let rec draw_drawing_list ctx list =
     draw_drawing_list ctx tl;
     (match hd with
       Line pts -> draw_line ctx pts
+    | Rectangle pts -> draw_rect ctx pts
+    | Circle pts -> draw_circle ctx pts
     | _ -> failwith  "unknown shape"))
 
 let create_server, draw_server, image_string =
@@ -131,7 +173,15 @@ let create_server, draw_server, image_string =
        Line pts ->
          draw_line ctx pts;
          drawing_list := (drawing :: !drawing_list);
-         console (fun () -> "[draw_server] appending to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
+         console (fun () -> "[draw_server] appending line to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
+     | Rectangle pts ->
+         draw_rect ctx pts;
+         drawing_list := (drawing :: !drawing_list);
+         console (fun() -> "[draw_server] appending rectangle to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
+     | Circle pts ->
+         draw_circle ctx pts;
+         drawing_list := (drawing :: !drawing_list);
+         console (fun () -> "[draw_sever] appending circle to drawing_list (length of " ^ (string_of_int (List.length !drawing_list)) ^ ")");
      | _ -> failwith "unknown shapes"
    ),
    (fun() ->
@@ -184,7 +234,7 @@ let imageservice =
           jsnew Goog.Ui.hsvPalette(Js.null, Js.null, Js.some (Js.string "goog-hsv-palette-sm")) in
         pSmall##render(Js.some Dom_html.document##body);
 
-        let x = ref 0 and y = ref 0 in
+        let x = ref 0 and y = ref 0 and key = ref 0 in
 
         let set_coord ev =
           let x0, y0 = Dom_html.elementClientPosition canvas in
@@ -192,14 +242,21 @@ let imageservice =
         in
 
         let compute_line ev =
-          let () = Eliom_lib.debug "compute_line" in
+          let () = Eliom_lib.debug "[compute_line]" in
           let oldx = !x and oldy = !y in
           set_coord ev;
           let color = Js.to_string (pSmall##getColor()) in
           let size = int_of_float (Js.to_float (slider##getValue())) in
           let pt1:coord = (oldx, oldy) in
           let pt2:coord = (!x, !y) in
-          Line (color, size, pt1, pt2)
+          let print k = Eliom_lib.debug "[compute_line] charCode: %i" k in
+          let _ = Lwt.bind
+            (%rpc_get_key ()) (fun k ->
+              print !k; key := !k; Lwt.return ())  in
+          match !key with
+            99 -> Circle (color, size, pt1, pt2)
+          | 114 -> Rectangle (color, size, pt1, pt2)
+          | _ -> Line (color, size, pt1, pt2)
         in
 
         let line ev =
@@ -235,8 +292,9 @@ let imageservice =
             (fun () ->
               keypresses Dom_html.document
                 (fun ev _ ->
-                  press (Js.Optdef.get (ev##charCode) (fun() -> 0));
-                  Eliom_lib.debug "key %i" (Js.Optdef.get (ev##charCode) (fun() -> 0));
+                  let key = (Js.Optdef.get (ev##charCode) (fun() -> 0)) in
+                  press key;
+                  Eliom_lib.debug "key %i" key;
                   Lwt.return()
                 )));
 
